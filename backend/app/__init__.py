@@ -8,6 +8,8 @@ def create_app():
     app.config["SECRET_KEY"] = "secret"
 
     db.init_app(app)
+    from .routes.auth import auth_bp  
+    app.register_blueprint(auth_bp, url_prefix="/api/auth")
 
     @app.route("/")
     def home():
