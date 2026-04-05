@@ -12,8 +12,12 @@ def create_app():
     
     from .extensions import jwt
     jwt.init_app(app)
+    
     from .routes.auth import auth_bp  
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
+
+    from .routes.portfolio import portfolio_bp
+    app.register_blueprint(portfolio_bp, url_prefix="/api/portfolio")
 
     @app.route("/")
     def home():

@@ -7,6 +7,9 @@ class User(db.Model):
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(256)) # Increased length for hash
 
+    # Relationship to link assets
+    assets = db.relationship('Asset', backref='owner', lazy=True, cascade="all, delete-orphan")
+
     def set_password(self, clear_password):
         self.password = generate_password_hash(clear_password)
 
