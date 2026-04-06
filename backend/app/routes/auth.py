@@ -1,7 +1,9 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request
 from app.extensions import db
 from app.models.user import User
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from app.utils.responses import success_response, error_response
+from app.utils.validators import validate_email, validate_password
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -10,16 +12,33 @@ auth_bp = Blueprint("auth", __name__)
 def register():
     data = request.get_json()
 
-    user = User(
-        name=data.get("name"),
-        email=data.get("email")
-    )
-    user.set_password(data.get("password")) # Hash the password
+    email = data.get("email")
+    password = data.get("password")
+    name = data.get("name")
 
-    db.session.add(user)
-    db.session.commit()
+    # Input validation
+    if not name:
+        return error_response("Name is required", 400)
+    if not validate_email(email):
+        return error_response("A valid email is required", 400)
+    if not validate_password(password):
+        return error_response("Password must be at least 6 characters long", 400)
 
-    return jsonify({"message": "User registered successfully"})
+    # Duplicate check
+    if User.query.filter_by(email=email).first():
+        return error_response("Email already registered", 409)
+
+    try:
+        user = User(name=name, email=email)
+        user.set_password(password) # Hash the password
+
+        db.session.add(user)
+        db.session.commit()
+
+        return success_response({"id": user.id, "email": user.email}, "User registered successfully", 201)
+    except Exception as e:
+        db.session.rollback()
+        return error_response("Server error during registration", 500)
 
 
 # LOGIN
@@ -30,18 +49,18 @@ def login():
     email = data.get("email")
     password = data.get("password")
 
+    if not validate_email(email):
+        return error_response("Invalid email format", 400)
+
     user = User.query.filter_by(email=email).first()
 
     # Check password via hash
     if user and user.check_password(password):
         # Generate JWT Token based on user ID
         access_token = create_access_token(identity=str(user.id))
-        return jsonify({
-            "message": "Login successful",
-            "access_token": access_token
-        })
+        return success_response({"access_token": access_token}, "Login successful")
 
-    return jsonify({"message": "Invalid email or password"}), 401
+    return error_response("Invalid email or password", 401)
 
 # PROTECTED ROUTE EXAMPLE
 @auth_bp.route("/profile", methods=["GET"])
@@ -52,9 +71,9 @@ def profile():
     user = User.query.get(current_user_id)
     
     if not user:
-        return jsonify({"message": "User not found"}), 404
+        return error_response("User not found", 404)
 
-    return jsonify({
+    return success_response({
         "id": user.id,
         "name": user.name,
         "email": user.email
