@@ -1,84 +1,53 @@
-# Portfolio Management System - Backend
+# Portfolio Management System
 
-This is a production-ready Flask REST API that serves as the backend for the Portfolio Management System. It handles user authentication, portfolio data management, and standardized API communications.
+A full-stack web application securely designed to help users manage their financial portfolios. Users can elegantly track their asset holdings, edit their prices and quantities, and view their total balance in real-time.
 
-## Features
+This repository is a monorepo featuring:
+- `/backend`: A robust Python Flask RESTful API.
+- `/frontend`: A highly dynamic, glassmorphism-styled React client built with Vite.
 
-- **Robust Authentication**: Secure login and route protection using `Flask-JWT-Extended`.
-- **Database System**: Powered by `SQLAlchemy` ORM. Configured to use SQLite for local development and PostgreSQL for production.
-- **RESTful Architecture**: Clean modular blueprints for `auth` and `portfolio` routes.
-- **Standardized Responses**: Predictable JSON response structures and centralized error handlers (400, 404, 405, 500).
-- **CORS Enabled**: Ready to connect with any frontend application.
-- **Production Ready**: Fully configured for 1-click deployment to Render or Railway using Gunicorn and dynamic environment variables.
+## Core Features
 
-## Getting Started (Local Development)
+- **Secure Access**: Registration and Login using `Flask-JWT-Extended` stateful tokenization.
+- **Portfolio Operations**: Full CRUD (Create, Read, Update, Delete) capability on individual assets directly from the dashboard.
+- **Dynamic Asset Tracking**: Total value instantly scales accurately based on manual quantity and value inputs.
+- **Premium Aesthetics**: Fully responsive interface highlighting dynamic micro-animations, tailored gradients, and a frosted glass theme.
 
-### Prerequisites
-- Python 3.8+
-- pip (Python package installer)
+## Setup Instructions
 
-### Installation
+To run this application locally, you must run both pieces of the stack simultaneously in separate terminal instances.
 
-1. **Clone the repository:**
-   ```bash
-   git clone <your-repo-url>
-   cd Project1
-   ```
+### 1. Launch the Backend API
 
-2. **Navigate to the backend directory:**
-   ```bash
-   cd backend
-   ```
+```bash
+cd backend
 
-3. **Set up a Virtual Environment:**
-   ```bash
-   python -m venv venv
-   # On Windows:
-   .\venv\Scripts\activate
-   # On macOS/Linux:
-   source venv/bin/activate
-   ```
+# Create & activate your virtual environment
+python -m venv venv
+# On Windows
+.\venv\Scripts\activate
+# On macOS/Linux
+source venv/bin/activate
 
-4. **Install Dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+# Install the Python requirements
+pip install -r requirements.txt
 
-5. **Environment Variables:**
-   Create a `.env` file in the `backend` directory with the following variables:
-   ```env
-   SECRET_KEY=your_super_secret_key
-   JWT_SECRET_KEY=your_jwt_secret_key
-   # DATABASE_URL=postgresql://user:password@localhost/dbname (Optional for local, uses SQLite by default)
-   ```
-
-6. **Run the Server:**
-   ```bash
-   python run.py
-   ```
-   The API will be available at `http://127.0.0.1:5000/`. The database tables will be automatically initialized on the first run.
-
-## Deployment
-
-This application is ready to be deployed to cloud platforms like **Render** or **Railway**.
-
-- **Web Server**: Uses `gunicorn` via the `Procfile`.
-- **Database**: When deploying, provide a PostgreSQL connection string in the `DATABASE_URL` environment variable. The config will automatically parse the URI correctly.
-- **Root Directory**: Be sure to configure `backend` as your root directory in your deployment platform settings.
-
-## Project Structure
-
+# Run the Flask Server
+python run.py
 ```
-backend/
-├── app/
-│   ├── routes/          # Blueprint routes (auth, portfolio)
-│   ├── utils/           # Utility functions (standardized responses)
-│   ├── __init__.py      # App factory and error handlers
-│   └── extensions.py    # Database and JWT instances
-├── instance/            # Local SQLite database drops here
-├── .env.example         # Example environment variables
-├── config.py            # App configuration and environment loader
-├── Procfile             # Production startup command
-├── requirements.txt     # Python dependencies
-└── run.py               # Main application entry point
+> The API will serve at http://127.0.0.1:5000/. It automatically proxies your local database setup on initial startup.
+
+### 2. Launch the Web Frontend
+
+Open a new terminal window at the project root:
+
+```bash
+cd frontend
+
+# Install the Node dependencies
+npm install
+
+# Run the Vite Dev Server
+npm run dev
 ```
+> The dashboard interface will open up at http://localhost:5173/ and will automatically route requests internally to your backend process.
